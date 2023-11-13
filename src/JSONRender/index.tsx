@@ -9,12 +9,12 @@ export interface JSONRenderProps {
 
 
 const JSONRender = () => {
- 
+
 
   return (
     <StyledJSONRender
     >
-      <ObjectRender data={TestJson}/>
+      <ObjectRender data={TestJson} depth={1}/>
     </StyledJSONRender>
   );
 };
