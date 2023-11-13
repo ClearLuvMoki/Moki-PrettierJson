@@ -1,46 +1,24 @@
-export interface PrettyJSONProps {
-  // 源数据
-  data: any;
-  // 间隙
-  space?: number;
+function nodeGetType(node: any) {
+    // @ts-ignore
+  return {}.toString
+        .call(node)
+        .match(/\s([a-zA-Z]+)/)[1]
+        .toLowerCase();
 }
 
-export const handlePrettyJSON = (props: PrettyJSONProps) => {
-  const {data, space = 2} = props;
-  const regLine = /^( *)("[^"]+": )?("[^"]*"|[\w.+-]*)?([,[{]|\[\s*\],?|\{\s*\},?)?$/mg;
-  const text = JSON.stringify(data, null, isNaN(space) ? 2 : space);
-
-  /* istanbul ignore next */
-  if (!text) {
-    return text;
-  }
-
-  return text.replace(/&/g, '&amp;').replace(/\\"([^,])/g, '\\&quot;$1')
-    .replace(/</g, '&lt;').replace(/>/g, '&gt;')
-    .replace(regLine, handleReplace);
-}
-
-export const handleReplace = (ind: string, key: string, val: string, tra: string) => {
-  console.log(ind, 'ind')
-  console.log(key, 'key')
-  const spanEnd = '</span>';
-  const keySpan = `<span class="__json-key__">`;
-  const valSpan = `<span class="__json-value__">`;
-  const strSpan = `<span class="__json-string__">`;
-  const booSpan = `<span class="__json-boolean__">`;
-
-  let sps = ind || '';
-  if (key) {
-    sps = sps + '"' + keySpan + key.replace(/^"|":\s$/g, '') + spanEnd + '": ';
-  }
-
-  if (val) {
-    if (val === 'true' || val === 'false') {
-      sps = sps + booSpan + val + spanEnd;
-    } else {
-      sps = sps + (val[0] === '"' ? strSpan : valSpan) + val + spanEnd;
+// 转换节点类型
+export const nodeToType = (node: any) => {
+   let type = nodeGetType(node);
+    // some extra disambiguation for numbers
+    if (type === 'number') {
+        if (isNaN(node)) {
+            type = 'nan';
+        } else if ((node | 0) !== node) {
+            //bitwise OR produces integers
+            type = 'float';
+        } else {
+            type = 'integer';
+        }
     }
-  }
-
-  return sps + (tra || '');
+    return type;
 }

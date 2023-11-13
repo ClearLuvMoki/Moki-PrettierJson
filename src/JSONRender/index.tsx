@@ -1,26 +1,21 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import {StyledJSONRender} from "moki-prettie-json";
-import {handlePrettyJSON} from "moki-prettie-json/core/utils";
+import {ObjectRender} from "moki-prettie-json/components";
+// @ts-ignore
+import TestJson from "./test.json"
 
 export interface JSONRenderProps {
-
 }
 
+
 const JSONRender = () => {
+ 
+
   return (
     <StyledJSONRender
-      dangerouslySetInnerHTML={{
-        __html: `
-        <pre>
-            ${handlePrettyJSON({
-                data: {
-                  name: "1212"
-                }
-            })}
-          </pre>
-        `
-      }}
-    />
+    >
+      <ObjectRender data={TestJson}/>
+    </StyledJSONRender>
   );
 };
 
