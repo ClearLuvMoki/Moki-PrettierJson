@@ -1,11 +1,45 @@
-import {NodeTypes} from "moki-prettie-json/types";
+import {NodeTypes, StringTypes} from "moki-prettie-json/types";
 import {ObjectRender} from "moki-prettie-json/components";
 import {JSX} from "react/jsx-runtime";
 import StringRender from "moki-prettie-json/components/StringRender";
 import IntegerRender from "moki-prettie-json/components/IntegerRender";
 import FloatRender from "moki-prettie-json/components/FloatRender";
+import dayjs from "dayjs"
 
-function nodeGetType(node: any): NodeTypes {
+export const isURL = (str: string) => {
+  const pattern = new RegExp('^(https?:\\/\\/)?' + // protocol
+    '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|' + // domain name
+    '((\\d{1,3}\\.){3}\\d{1,3}))' + // OR ip (v4) address
+    '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*' + // port and path
+    '(\\?[;&a-z\\d%_.~+=-]*)?' + // query string
+    '(\\#[-a-z\\d_]*)?$', 'i'); // fragment locator
+  return pattern.test(str);
+}
+
+export const isHTML = (str: string) => {
+  const pattern = /<[a-z][\s\S]*>/i;
+  return pattern.test(str);
+}
+
+export const isDate = (str: string) => {
+  return dayjs(str).isValid();
+}
+
+// 判断 string 具体类型
+export const handleGetStringType = (str: string): StringTypes => {
+  if (isURL(str)) {
+    return "URL"
+  } else if (isDate(str)) {
+    return "Date"
+  } else if (isHTML(str)) {
+    return "HTML"
+  } else {
+    return "Normal"
+  }
+}
+
+
+const nodeGetType = (node: any): NodeTypes => {
   // @ts-ignore
   return {}.toString
     .call(node)

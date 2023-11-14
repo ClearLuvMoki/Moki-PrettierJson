@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import deepEqual from "deep-equal";
 import {nodeToType} from "moki-prettie-json/core/utils";
 import {StyledTypeLabelRender} from "moki-prettie-json/styled";
@@ -11,8 +11,12 @@ interface StringRenderProps {
 
 const StringRender = React.memo((props: StringRenderProps) => {
 
+  useEffect(() => {
+
+  }, [])
+
   return (
-    <StyledStringRender>
+    <StyledStringRender id={"moki-string-render"} >
       <StyledTypeLabelRender>{nodeToType(props?.data)}</StyledTypeLabelRender>
       <span>{props?.data || `""`}</span>
     </StyledStringRender>
