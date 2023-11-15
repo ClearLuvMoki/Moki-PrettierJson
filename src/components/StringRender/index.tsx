@@ -16,7 +16,7 @@ const StringRender = React.memo((props: StringRenderProps) => {
   }, [])
 
   return (
-    <StyledStringRender id={"moki-string-render"} >
+    <StyledStringRender >
       <StyledTypeLabelRender>{nodeToType(props?.data)}</StyledTypeLabelRender>
       <span>{props?.data || `""`}</span>
     </StyledStringRender>
