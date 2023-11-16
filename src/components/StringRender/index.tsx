@@ -11,10 +11,6 @@ interface StringRenderProps {
 
 const StringRender = React.memo((props: StringRenderProps) => {
 
-  useEffect(() => {
-
-  }, [])
-
   return (
     <StyledStringRender >
       <StyledTypeLabelRender>{nodeToType(props?.data)}</StyledTypeLabelRender>
