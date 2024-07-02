@@ -1,12 +1,13 @@
-import React, {memo, useMemo, useRef} from 'react';
+import React, {memo, useEffect, useMemo, useRef, useState} from 'react';
 import deepEqual from "deep-equal";
 import CodeMirror, {ReactCodeMirrorRef} from '@uiw/react-codemirror';
 import {json} from "@codemirror/lang-json";
 import {githubDark, githubLight} from '@uiw/codemirror-theme-github';
 import {xcodeDark, xcodeLight} from '@uiw/codemirror-theme-xcode';
-
+import Tool from "../../utils/tool";
 
 interface Props {
+    value: string;
     theme?: "github-dark" | "github-light" | "xcode-dark" | "xcode-light";
     classNames?: {
         root?: string;
@@ -18,78 +19,37 @@ interface Props {
     }
 }
 
-const JSONEditor = memo(({classNames, styles, theme}: Props) => {
-
-    const [value, setValue] = React.useState("{\n" +
-        "  \"type\": \"team\",\n" +
-        "  \"test\": {\n" +
-        "    \"testPage\": \"tools/testing/run-tests.htm\",\n" +
-        "    \"enabled\": true\n" +
-        "  },\n" +
-        "    \"search\": {\n" +
-        "        \"excludeFolders\": [\n" +
-        "      \".git\",\n" +
-        "      \"node_modules\",\n" +
-        "      \"tools/bin\",\n" +
-        "      \"tools/counts\",\n" +
-        "      \"tools/policheck\",\n" +
-        "      \"tools/tfs_build_extensions\",\n" +
-        "      \"tools/testing/jscoverage\",\n" +
-        "      \"tools/testing/qunit\",\n" +
-        "      \"tools/testing/chutzpah\",\n" +
-        "      \"server.net\"\n" +
-        "        ]\n" +
-        "    },\n" +
-        "  \"languages\": {\n" +
-        "    \"vs.languages.typescript\": {\n" +
-        "      \"validationSettings\": [{\n" +
-        "        \"scope\":\"/\",\n" +
-        "        \"noImplicitAny\":true,\n" +
-        "        \"noLib\":false,\n" +
-        "        \"extraLibs\":[],\n" +
-        "        \"semanticValidation\":true,\n" +
-        "        \"syntaxValidation\":true,\n" +
-        "        \"codeGenTarget\":\"ES5\",\n" +
-        "        \"moduleGenTarget\":\"\",\n" +
-        "        \"lint\": {\n" +
-        "                    \"emptyBlocksWithoutComment\": \"warning\",\n" +
-        "                    \"curlyBracketsMustNotBeOmitted\": \"warning\",\n" +
-        "                    \"comparisonOperatorsNotStrict\": \"warning\",\n" +
-        "                    \"missingSemicolon\": \"warning\",\n" +
-        "                    \"unknownTypeOfResults\": \"warning\",\n" +
-        "                    \"semicolonsInsteadOfBlocks\": \"warning\",\n" +
-        "                    \"functionsInsideLoops\": \"warning\",\n" +
-        "                    \"functionsWithoutReturnType\": \"warning\",\n" +
-        "                    \"tripleSlashReferenceAlike\": \"warning\",\n" +
-        "                    \"unusedImports\": \"warning\",\n" +
-        "                    \"unusedVariables\": \"warning\",\n" +
-        "                    \"unusedFunctions\": \"warning\",\n" +
-        "                    \"unusedMembers\": \"warning\"\n" +
-        "                }\n" +
-        "      }, \n" +
-        "      {\n" +
-        "        \"scope\":\"/client\",\n" +
-        "        \"baseUrl\":\"/client\",\n" +
-        "        \"moduleGenTarget\":\"amd\"\n" +
-        "      },\n" +
-        "      {\n" +
-        "        \"scope\":\"/server\",\n" +
-        "        \"moduleGenTarget\":\"commonjs\"\n" +
-        "      },\n" +
-        "      {\n" +
-        "        \"scope\":\"/build\",\n" +
-        "        \"moduleGenTarget\":\"commonjs\"\n" +
-        "      },\n" +
-        "      {\n" +
-        "        \"scope\":\"/node_modules/nake\",\n" +
-        "        \"moduleGenTarget\":\"commonjs\"\n" +
-        "      }],\n" +
-        "      \"allowMultipleWorkers\": true\n" +
-        "    }\n" +
-        "  }\n" +
-        "}");
-
+const JSONEditor = memo(({classNames, styles, theme, value: valueProps}: Props) => {
     const instance = useRef<ReactCodeMirrorRef>(null)
+    const rootRef = useRef<HTMLDivElement>(null)
+    const [value, setValue] = React.useState("");
+    const [width, setWidth] = useState(0);
+
+    useEffect(() => {
+        if (valueProps) {
+            setValue(valueProps)
+        }
+    }, [valueProps])
+
+
+    useEffect(() => {
+        if (rootRef.current) {
+            const root = rootRef.current;
+            const handleResize = (entries) => {
+                for (let entry of entries) {
+                    const {width} = entry.contentRect;
+                    setWidth(width);
+                }
+            };
+            const observer = new ResizeObserver(handleResize);
+            observer.observe(root);
+
+            return () => {
+                observer.disconnect();
+            };
+        }
+    }, [rootRef.current])
+
 
     const $theme = useMemo(() => {
         switch (theme) {
@@ -108,19 +68,28 @@ const JSONEditor = memo(({classNames, styles, theme}: Props) => {
         <div
             className={"moki-json-editor w-full h-full" + (classNames?.root || "")}
             style={styles?.root}
+            ref={rootRef}
         >
             <CodeMirror
                 ref={instance}
                 value={value}
+                editable={false}
                 className={"w-full h-full " + (classNames?.coder || "")}
                 style={styles?.coder}
                 extensions={[json()]}
                 theme={$theme || "dark"}
-                onChange={(value, viewUpdate) => {
-                    console.log(121212)
+                basicSetup={{
+                    foldGutter: false
                 }}
-                onClick={() => {
+                onClick={(event) => {
                     const editor = instance.current?.editor;
+                    const view = instance.current?.view;
+                    const state = instance.current?.state;
+                    const pos = view.posAtCoords({x: event.clientX, y: event.clientY});
+                    const line = view.state.doc.lineAt(pos);
+                    const lineContent = line.text?.trim();
+                    const type = Tool.handleExtractJSONItem(lineContent)
+                    console.log(type, 'type')
                 }}
             />
         </div>

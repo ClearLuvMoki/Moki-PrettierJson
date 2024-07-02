@@ -16,6 +16,7 @@
   },
   "devDependencies": {
     "@codemirror/lang-json": "^6.0.1",
+    "@codemirror/language": "^6.10.2",
     "@nextui-org/react": "^2.4.2",
     "@types/deep-equal": "^1.0.4",
     "@types/node": "^16",
