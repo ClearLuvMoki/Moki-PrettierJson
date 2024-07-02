@@ -7,12 +7,27 @@
     "build": "rspress build",
     "preview": "rspress preview"
   },
+  "peerDependencies": {
+    "react": ">=18.0.0",
+    "react-dom": ">=18.0.0"
+  },
   "dependencies": {
     "rspress": "^1.25.0"
   },
   "devDependencies": {
+    "@codemirror/lang-json": "^6.0.1",
+    "@nextui-org/react": "^2.4.2",
     "@types/deep-equal": "^1.0.4",
     "@types/node": "^16",
-    "deep-equal": "^2.2.3"
+    "@types/react": "^18.3.3",
+    "@types/react-dom": "^18.3.0",
+    "@uiw/codemirror-theme-github": "^4.22.2",
+    "@uiw/codemirror-theme-xcode": "^4.22.2",
+    "@uiw/react-codemirror": "^4.22.2",
+    "autoprefixer": "^10.4.19",
+    "deep-equal": "^2.2.3",
+    "framer-motion": "^11.2.12",
+    "postcss": "^8.4.39",
+    "tailwindcss": "^3.4.4"
   }
 }
