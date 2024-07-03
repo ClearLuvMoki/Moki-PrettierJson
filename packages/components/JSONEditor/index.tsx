@@ -4,6 +4,7 @@ import CodeMirror, {ReactCodeMirrorRef} from '@uiw/react-codemirror';
 import {json} from "@codemirror/lang-json";
 import {githubDark, githubLight} from '@uiw/codemirror-theme-github';
 import {xcodeDark, xcodeLight} from '@uiw/codemirror-theme-xcode';
+import jsonMap from "json-source-map";
 import Tool from "../../utils/tool";
 
 interface Props {
@@ -24,6 +25,10 @@ const JSONEditor = memo(({classNames, styles, theme, value: valueProps}: Props) 
     const rootRef = useRef<HTMLDivElement>(null)
     const [value, setValue] = React.useState("");
     const [width, setWidth] = useState(0);
+
+    const jsonMapped = useMemo(() => {
+        return jsonMap.stringify(value, null, 2);
+    }, [value,]);
 
     useEffect(() => {
         if (valueProps) {
@@ -89,7 +94,18 @@ const JSONEditor = memo(({classNames, styles, theme, value: valueProps}: Props) 
                     const line = view.state.doc.lineAt(pos);
                     const lineContent = line.text?.trim();
                     const type = Tool.handleExtractJSONItem(lineContent)
-                    console.log(type, 'type')
+                    // console.log(type, 'type')
+                }}
+                onUpdate={(update) => {
+                    const range = update.state.selection.ranges[0];
+                    const line = update.state.doc.lineAt(range.anchor);
+                    console.log(range, line, jsonMapped.pointers, 'lllll')
+                    const pointerEntry = Object.entries(jsonMapped.pointers).find(
+                        ([pointer, info]) => {
+                            return info.value.line === line.number - 1;
+                        }
+                    );
+                    console.log(pointerEntry, 'pointerEntry')
                 }}
             />
         </div>
