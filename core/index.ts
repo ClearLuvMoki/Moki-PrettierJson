@@ -1,1 +1,2 @@
-export {default as JSONEditor} from "./editor"
+export * from "./UI"
+export type * from "./types"

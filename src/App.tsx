@@ -4,7 +4,9 @@ import {JSONEditor} from "../core"
 const App = () => {
   return (
     <div className="content">
-     <JSONEditor/>
+     <JSONEditor
+        content={{name: "1212"}}
+     />
     </div>
   );
 };

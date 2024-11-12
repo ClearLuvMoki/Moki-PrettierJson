@@ -13,13 +13,18 @@
   },
   "devDependencies": {
     "@codemirror/lang-json": "^6.0.1",
+    "@jsonhero/json-infer-types": "^1.2.11",
     "@rsbuild/core": "^1.0.19",
     "@rsbuild/plugin-react": "^1.0.6",
     "@types/deep-equal": "^1.0.4",
     "@types/react": "^18.3.12",
     "@types/react-dom": "^18.3.1",
+    "@uiw/codemirror-theme-github": "^4.23.6",
+    "@uiw/codemirror-theme-xcode": "^4.23.6",
     "@uiw/react-codemirror": "^4.23.6",
+    "ahooks": "^3.8.1",
     "deep-equal": "^2.2.3",
+    "json-source-map": "^0.6.1",
     "typescript": "^5.6.3"
   }
 }
